@@ -15,16 +15,9 @@ contract Crowdfunding is Pausable, Ownable {
         Active,
         Successful,
         Failed
-    } // 众筹的状态枚举
-    
-    CampaignState public state; // 当前众筹的状态
-
-    struct Tier {
-        string name; // 等级名称
-        uint256 amount; // 等级目标金额
-        uint256 backers; // 等级持续时间
     }
-    Tier[] public tiers;
+
+    CampaignState public state;
 
     struct Backer {
         uint256 totalContribution;
@@ -32,6 +25,12 @@ contract Crowdfunding is Pausable, Ownable {
     }
 
     mapping(address => Backer) public backers;
+    struct Tier {
+        string name; // 等级名称
+        uint256 amount; // 等级目标金额
+        uint256 backers; // 
+    }
+    Tier[] public tiers;
 
     modifier campaignOpen() {
         require(state == CampaignState.Active, "Campaign is not active.");
@@ -43,7 +42,8 @@ contract Crowdfunding is Pausable, Ownable {
         string memory _name,
         string memory _description,
         uint256 _global,
-        uint256 _duratyionInDays) Ownable(_owner) {
+        uint256 _duratyionInDays
+    ) Ownable(_owner) {
         name = _name;
         description = _description;
         global = _global;
@@ -66,7 +66,9 @@ contract Crowdfunding is Pausable, Ownable {
         }
     }
 
-    function fund(uint256 _tierIndex) public payable campaignOpen whenNotPaused() {
+    function fund(
+        uint256 _tierIndex
+    ) public payable campaignOpen whenNotPaused {
         require(_tierIndex < tiers.length, "Invalid tier.");
         require(msg.value == tiers[_tierIndex].amount, "Invalid amount.");
 
@@ -124,7 +126,6 @@ contract Crowdfunding is Pausable, Ownable {
         return tiers;
     }
 
-
     function getCampaignStatus() public view returns (CampaignState) {
         if (state == CampaignState.Active && block.timestamp > deadline) {
             return
@@ -135,7 +136,9 @@ contract Crowdfunding is Pausable, Ownable {
         return state;
     }
 
-    function extendDeadline(uint256 _daysToAdd) public onlyOwner campaignOpen {
+    function extendDeadline(
+        uint256 _daysToAdd
+    ) public onlyOwner campaignOpen {
         deadline += _daysToAdd * 1 days;
     }
 
